@@ -8,27 +8,101 @@
     <!-- CSS only -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">   
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"> 
+    <style>
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity 0.4s ease;
+        }
+        .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+            opacity: 0;
+        }
+    </style>
 </head>
 <body class="h-100">
     <div id="app" class="h-100 d-flex flex-column">
         <main class="flex-grow-1 d-flex align-items-center justify-content-center bg-dark">
             <div class="container">
-                <router-view></router-view>
+                <transition name="fade" mode="out-in">
+                    <router-view></router-view>
+                </transition>                
             </div>            
         </main>
         <footer class="flex-shrink-0">
-            <nav class="navbar navbar-light bg-light">
+            <nav class="navbar navbar-dark bg-dark">
                 <div class="container">
                   <router-link :to="'/'" class="navbar-brand">
                     <i class="bi bi-bootstrap-fill"></i>
                   </router-link>
+                  <div class="text-light">copyright sunghee</div>
                 </div>
             </nav>
         </footer>
     </div>
+    <template id="navbar">
+        <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid">
+              <div>전역에서 받을 title</div>
+              <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">                          
+                  <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                  <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                    <li class="nav-item">
+                      <!-- <a class="nav-link active" aria-current="page" href="#">Home</a> -->
+                      <router-link :to="{name:'home'}" class="nav-link">home</router-link>
+                    </li>
+                    <li class="nav-item">
+                      <router-link :to="{name:'about'}" class="nav-link">about</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link :to="{name:'herolist'}" class="nav-link">hero list</router-link>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+        </nav>
+    </template>
+    <template id="home">
+        <section class="card">
+            <my-navbar></my-navbar>
+            <div class="card-body">
+                <p>welcome my vue router page!</p>   
+                <section>
+                    <h4>next work</h4>
+                    <ul>
+                        <li>전역변수에 데이터 저장하고 불러오기 - 각 페이지 타이틀</li>
+                        <li>각 페이지에 뒤로 가기 버튼 넣고<br>
+                             goBack () {
+                            window.history.length > 1
+                              ? this.$router.go(-1)
+                              : this.$router.push('/')
+                          }
+                        </li>
+                        <li>class - router-link-active 가 생기면 active 추가</li>
+                        <li>transition - 방향에 따라 다른 모드 주기</li>
+                        <li>transition - card content <a href="https://codepen.io/akosstegner/pen/MQvbEe" target="_blank">https://codepen.io/akosstegner/pen/MQvbEe</a> </li>
+                        <li>loading</li>
+                    </ul>
+                </section>            
+            </div>
+        </section>
+    </template>
+    <template id="about">
+        <section class="card">
+            <my-navbar></my-navbar>
+            <div class="card-body">
+                title : <span>{{title}}</span><br>
+                today : <span>{{today}}</span>
+            </div>
+        </section>
+    </template>
     <template id="heroes-list">
         <section class="card">
-            <div class="card-header text-center">Hero's list</div>
+            <my-navbar></my-navbar>
             <div class="card-body">
                 <table class="table table-hover">
                     <thead>
@@ -67,7 +141,7 @@
     </template>
     <template id="hero">
         <section class="card">
-            <div class="card-header text-center">Hero's list</div>            
+            <my-navbar></my-navbar>            
             <div class="card-body">
                 <h2>{{hero.name}}</h2>
                 <hr> 
@@ -75,13 +149,13 @@
                 <label for="hero-badass">badass</label> <input type="text" id="hero-badass" :value="hero.badass" readonly>
             </div>
             <div class="card-footer">
-                <router-link :to="'/'" tag="button" class="btn btn-primary w-100"><i class="bi bi-chevron-left"></i> Back</router-link>
+                <router-link :to="{name:'herolist'}" tag="button" class="btn btn-primary w-100"><i class="bi bi-chevron-left"></i> Back</router-link>
             </div>            
         </section>
     </template>
     <template id="hero-edit">
         <section class="card">
-            <div class="card-header text-center">Hero's list</div>            
+            <my-navbar></my-navbar>            
             <form v-on:submit.prevent="updateHero">
                 <div class="card-body">      
                     <h2>edit {{ hero.name }} hero</h2> 
@@ -94,7 +168,7 @@
                     <input type="number" min="0" max="10" v-model="hero.badass" class="form-control" required/>
                 </div>
                 <div class="card-footer d-flex">
-                    <router-link v-bind:to="'/'" class="btn btn-outline-primary flex-fill" tag="button">cancel</router-link>
+                    <router-link :to="{name:'herolist'}" class="btn btn-outline-primary flex-fill" tag="button">cancel</router-link>
                     <button type="submit" class="btn btn-primary flex-fill  ms-2"><i class="bi bi-pencil"></i> edit</button>                
                 </div>
             </form>            
@@ -102,7 +176,7 @@
     </template>
     <template id="hero-add">
         <section class="card">
-            <div class="card-header text-center">Hero's list</div>             
+            <my-navbar></my-navbar>             
             <form v-on:submit.prevent="createHero">
             <div class="card-body">       
                 <h2>add hero</h2>  
@@ -115,7 +189,7 @@
                 <input type="number" min="0" max="10" v-model="hero.badass" class="form-control" required/>
             </div>
             <div class="card-footer d-flex">
-                <router-link v-bind:to="'/'" class="btn btn-outline-primary flex-fill" tag="button">cancel</router-link>
+                <router-link :to="{name:'herolist'}" class="btn btn-outline-primary flex-fill" tag="button">cancel</router-link>
                 <button type="submit" class="btn btn-primary flex-fill ms-2"><i class="bi bi-plus"></i> create</button>                
             </div>
             </form>
@@ -123,14 +197,14 @@
     </template>
     <template id="hero-delete">
         <section class="card">
-            <div class="card-header text-center">Hero's list</div> 
+            <my-navbar></my-navbar>
             <div class="card-body text-center">
                 Are You sure? You want to delete <strong>{{hero.name}}</strong> from this Universe?<br>
                 He will be very upset...
             </div>
             <form v-on:submit.prevent="deleteHero">
             <div class="card-footer d-flex">
-                <router-link :to="'/'" class="btn btn-outline-danger flex-fill" tag="button">cancel</router-link>
+                <router-link :to="{name:'herolist'}" class="btn btn-outline-danger flex-fill" tag="button">cancel</router-link>
                 <button type="submit" class="btn btn-danger flex-fill ms-2"><i class="bi bi-eraser"></i> delete</button>
             </div>
             </form>
@@ -150,18 +224,29 @@
             { id : 4, name : 'Hulk', power : 'SMASH!', badass: 42 }
         ];
         // component
+        Vue.component('my-navbar', {
+            template: '#navbar'
+        });
+        // page component
+        let Home = Vue.extend({
+            template:'#home',
+        });
+        let About = Vue.extend({
+            template:'#about',
+            data:function(){return {title:this.$route.name, today:new Date()}}
+        });
         let HeroesList = Vue.extend({
             template:'#heroes-list',
-            data:function(){return {heroes:heroes}},
+            data:function(){return {title:this.$route.name, heroes:heroes}},
             computed:{filteredHeroes:function(){return this.heroes;}}
         });
         let Hero = Vue.extend({
             template:'#hero',
-            data:function(){return{hero:findHero(this.$route.params.hero_id)}}
+            data:function(){return{title:this.$route.name, hero:findHero(this.$route.params.hero_id)}}
         });
         let HeroEdit = Vue.extend({
             template:'#hero-edit',
-            data:function(){return{hero:findHero(this.$route.params.hero_id)}},
+            data:function(){return{title:this.$route.name, hero:findHero(this.$route.params.hero_id)}},
             methods:{
                 updateHero:function(){
                     let hero = this.hero;
@@ -171,13 +256,13 @@
                         power:hero.power,
                         badass:hero.badass
                     }
-                    router.push('/');
+                    router.push({ name: 'herolist'});
                 }
             }
         });
         let HeroAdd = Vue.extend({
             template:'#hero-add',
-            data:function(){return { hero: { name: '', power: '', badass: 1}}},
+            data:function(){return {title:this.$route.name, hero: { name: '', power: '', badass: 1}}},
             methods:{
                 createHero:function(){
                     let hero = this.hero;
@@ -187,17 +272,17 @@
                         power:  hero.power,
                         badass: hero.badass
                     });
-                    router.push('/');
+                    router.push({ name: 'herolist'});
                 }
             }
         });
         let HeroDelete = Vue.extend({
             template:'#hero-delete',
-            data:function(){return {hero:findHero(this.$route.params.hero_id)}},
+            data:function(){return {title:this.$route.name, hero:findHero(this.$route.params.hero_id)}},
             methods:{
                 deleteHero:function(){
                     heroes.splice(findHeroKey(this.$route.params.hero_id),1);
-                    router.push('/');
+                    router.push({ name: 'herolist'});
                 }
             }
         })
@@ -217,7 +302,9 @@
         let router = new VueRouter({
             mode: 'history',
             routes:[
-                {path:'/', component:HeroesList},
+                {path:'/', component:Home, name:'home'},
+                {path:'/about', component:About, name:'about'},
+                {path:'/herolist', component:HeroesList, name:'herolist'},
                 {path:'/hero/:hero_id', component:Hero, name:'hero'},
                 {path:'/heroadd', component:HeroAdd, name:'heroadd'},
                 {path:'/heroedit/:hero_id', component:HeroEdit, name:'heroedit'},
