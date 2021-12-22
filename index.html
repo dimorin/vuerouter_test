@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vuerouter_test</title>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">   
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"> 
+</head>
+<body class="h-100">
+    <div id="app" class="h-100 d-flex flex-column">
+        <main class="flex-grow-1 d-flex align-items-center justify-content-center bg-dark">
+            <div class="container">
+                <router-view></router-view>
+            </div>            
+        </main>
+        <footer class="flex-shrink-0">
+            <nav class="navbar navbar-light bg-light">
+                <div class="container">
+                  <router-link :to="'/'" class="navbar-brand">
+                    <i class="bi bi-bootstrap-fill"></i>
+                  </router-link>
+                </div>
+            </nav>
+        </footer>
+    </div>
+    <template id="heroes-list">
+        <section class="card">
+            <div class="card-header text-center">Hero's list</div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th class="text-center">name</th>
+                            <th class="text-center">power</th>
+                            <th class="text-center">badass</th>
+                            <th class="text-center">action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="hero in filteredHeroes">
+                            <td class="text-center">
+                                <router-link :to="{name:'hero', params:{hero_id: hero.id}}">
+                                    {{ hero.name }}
+                                </router-link>
+                            </td>
+                            <td class="text-center">
+                                {{hero.power}}
+                            </td>
+                            <td class="text-center">
+                                {{hero.badass}}
+                            </td>
+                            <td class="text-center">
+                                <router-link :to="{name:'heroedit', params:{hero_id:hero.id}}" tag="button" class="btn"><i class="bi bi-pencil"></i> edit</router-link>
+                                <router-link :to="{name:'herodelete', params:{hero_id:hero.id}}" tag="button" class="btn"><i class="bi bi-eraser"></i> delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <router-link :to="{name:'heroadd'}" tag="button" class="btn btn-primary w-100"><i class="bi bi-plus-lg"></i> add hero</router-link>
+            </div>
+        </section>
+    </template>
+    <template id="hero">
+        <section class="card">
+            <div class="card-header text-center">Hero's list</div>            
+            <div class="card-body">
+                <h2>{{hero.name}}</h2>
+                <hr> 
+                <label for="hero-power">power</label> <input type="text" id="hero-power" :value="hero.power" readonly><br>
+                <label for="hero-badass">badass</label> <input type="text" id="hero-badass" :value="hero.badass" readonly>
+            </div>
+            <div class="card-footer">
+                <router-link :to="'/'" tag="button" class="btn btn-primary w-100"><i class="bi bi-chevron-left"></i> Back</router-link>
+            </div>            
+        </section>
+    </template>
+    <template id="hero-edit">
+        <section class="card">
+            <div class="card-header text-center">Hero's list</div>            
+            <form v-on:submit.prevent="updateHero">
+                <div class="card-body">      
+                    <h2>edit {{ hero.name }} hero</h2> 
+                    <hr>         
+                    <label class="form-label">Name</label>
+                    <input id="add-name" v-model="hero.name" class="form-control" required/>
+                    <label class="form-label">Superpower</label>
+                    <textarea id="add-power" rows="8" v-model="hero.power" class="form-control" required></textarea>
+                    <label class="form-label">Badass</label>
+                    <input type="number" min="0" max="10" v-model="hero.badass" class="form-control" required/>
+                </div>
+                <div class="card-footer d-flex">
+                    <router-link v-bind:to="'/'" class="btn btn-outline-primary flex-fill" tag="button">cancel</router-link>
+                    <button type="submit" class="btn btn-primary flex-fill  ms-2"><i class="bi bi-pencil"></i> edit</button>                
+                </div>
+            </form>            
+        </section>
+    </template>
+    <template id="hero-add">
+        <section class="card">
+            <div class="card-header text-center">Hero's list</div>             
+            <form v-on:submit.prevent="createHero">
+            <div class="card-body">       
+                <h2>add hero</h2>  
+                <hr>       
+                <label class="form-label">Name</label>
+                <input id="add-name" v-model="hero.name" class="form-control" required/>
+                <label class="form-label">Superpower</label>
+                <textarea id="add-power" rows="8" v-model="hero.power" class="form-control" required></textarea>
+                <label class="form-label">Badass</label>
+                <input type="number" min="0" max="10" v-model="hero.badass" class="form-control" required/>
+            </div>
+            <div class="card-footer d-flex">
+                <router-link v-bind:to="'/'" class="btn btn-outline-primary flex-fill" tag="button">cancel</router-link>
+                <button type="submit" class="btn btn-primary flex-fill ms-2"><i class="bi bi-plus"></i> create</button>                
+            </div>
+            </form>
+        </section>
+    </template>
+    <template id="hero-delete">
+        <section class="card">
+            <div class="card-header text-center">Hero's list</div> 
+            <div class="card-body text-center">
+                Are You sure? You want to delete <strong>{{hero.name}}</strong> from this Universe?<br>
+                He will be very upset...
+            </div>
+            <form v-on:submit.prevent="deleteHero">
+            <div class="card-footer d-flex">
+                <router-link :to="'/'" class="btn btn-outline-danger flex-fill" tag="button">cancel</router-link>
+                <button type="submit" class="btn btn-danger flex-fill ms-2"><i class="bi bi-eraser"></i> delete</button>
+            </div>
+            </form>
+        </section>
+    </template>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // heroes data
+        let heroes = [
+            { id : 0, name : 'Batman', power : 'Fist fighting', badass: 10 },
+            { id : 1, name : 'Superman', power : 'Laser eyes', badass: 7 },
+            { id : 2, name : 'Flash', power : 'Too fast', badass: 5 },
+            { id : 3, name : 'Spiderman', power : 'Just a nice guy', badass: 1 },
+            { id : 4, name : 'Hulk', power : 'SMASH!', badass: 42 }
+        ];
+        // component
+        let HeroesList = Vue.extend({
+            template:'#heroes-list',
+            data:function(){return {heroes:heroes}},
+            computed:{filteredHeroes:function(){return this.heroes;}}
+        });
+        let Hero = Vue.extend({
+            template:'#hero',
+            data:function(){return{hero:findHero(this.$route.params.hero_id)}}
+        });
+        let HeroEdit = Vue.extend({
+            template:'#hero-edit',
+            data:function(){return{hero:findHero(this.$route.params.hero_id)}},
+            methods:{
+                updateHero:function(){
+                    let hero = this.hero;
+                    heroes[findHeroKey(hero.id)] = {
+                        id: hero.id,
+                        name:hero.name,
+                        power:hero.power,
+                        badass:hero.badass
+                    }
+                    router.push('/');
+                }
+            }
+        });
+        let HeroAdd = Vue.extend({
+            template:'#hero-add',
+            data:function(){return { hero: { name: '', power: '', badass: 1}}},
+            methods:{
+                createHero:function(){
+                    let hero = this.hero;
+                    heroes.push({
+                        id:     getNextId(),
+                        name:   hero.name,
+                        power:  hero.power,
+                        badass: hero.badass
+                    });
+                    router.push('/');
+                }
+            }
+        });
+        let HeroDelete = Vue.extend({
+            template:'#hero-delete',
+            data:function(){return {hero:findHero(this.$route.params.hero_id)}},
+            methods:{
+                deleteHero:function(){
+                    heroes.splice(findHeroKey(this.$route.params.hero_id),1);
+                    router.push('/');
+                }
+            }
+        })
+        //
+        function findHero(id){
+            for(let i=0;i<heroes.length; ++i){
+                if(heroes[i].id === id) return heroes[i];
+            }
+        }
+        function findHeroKey(id){
+            for(let i=0;i<heroes.length;++i){
+                if(heroes[i].id === id) return i;
+            }
+        }
+        function getNextId() { return (heroes[heroes.length-1].id+1); }
+        // router
+        let router = new VueRouter({
+            mode: 'history',
+            routes:[
+                {path:'/', component:HeroesList},
+                {path:'/hero/:hero_id', component:Hero, name:'hero'},
+                {path:'/heroadd', component:HeroAdd, name:'heroadd'},
+                {path:'/heroedit/:hero_id', component:HeroEdit, name:'heroedit'},
+                {path:'/herodelete/:hero_id', component:HeroDelete, name:'herodelete'}
+            ]
+        });
+        // app
+        let vm = new Vue({
+            router
+        }).$mount('#app');
+    </script>
+</body>
+</html>
