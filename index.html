@@ -9,11 +9,25 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">   
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"> 
     <style>
-        .fade-enter-active, .fade-leave-active {
-            transition: opacity 0.4s ease;
+        .fade-enter-active{
+            transition: opacity 0.2s ease, transform 0.2s ease;
         }
-        .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+        .fade-leave-active {
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .fade-enter{ 
+            transform:translateX(-10px);
+            opacity:0;
+        }
+        .fade-leave-to  {
+            transform:translateX(10px);
             opacity: 0;
+        }
+        /* .fade-leave-active below version 2.1.8 */
+        .card{background:transparent;height:600px;}
+        svg path,
+        svg rect{
+        fill: #0d6efd;
         }
     </style>
 </head>
@@ -21,9 +35,11 @@
     <div id="app" class="h-100 d-flex flex-column">
         <main class="flex-grow-1 d-flex align-items-center justify-content-center bg-dark">
             <div class="container">
-                <transition name="fade" mode="out-in">
-                    <router-view></router-view>
-                </transition>                
+                <div class="bg-white overflow-hidden">
+                    <transition name="fade" mode="out-in">
+                        <router-view></router-view>
+                    </transition> 
+                </div>                               
             </div>            
         </main>
         <footer class="flex-shrink-0">
@@ -37,6 +53,21 @@
             </nav>
         </footer>
     </div>
+    <template id="loading">
+        <div class="position-absolute w-100 h-100 bg-white d-flex align-items-center justify-content-center" v-if="loading">
+            <div class="loader loader--style3" title="2">
+                <svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="40px" height="40px"
+                    viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+                    <path fill="#000"
+                        d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z">
+                        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25"
+                            to="360 25 25" dur="0.6s" repeatCount="indefinite" />
+                    </path>
+                </svg>
+            </div>
+        </div>
+    </template>
     <template id="navbar">
         <nav class="navbar navbar-light bg-light">
             <div class="container-fluid">
@@ -77,29 +108,38 @@
             <div class="card-body d-flex align-items-center justify-content-center">  
                 <img src="https://v3.ko.vuejs.org/logo.png" alt="">                           
             </div>
+            <my-loading :loading="loading"></my-loading>
         </section>
     </template>
     <template id="about">
         <section class="card">
             <my-navbar :cardtitle="title"></my-navbar>
             <div class="card-body">
-                <section>                    
-                    <h4>특징</h4>
-                    <ul>
-                        <li>window.history 열람해서 뒤로가기 기능 구현</li>
-                        <li>부모 컴포넌트(card)에서 자식 컴포넌트(navbar)로 타이틀 prop을 내려줌</li>
-                        <li>mounted 훅에서 $refs 의 class 체크하여 변경</li>
-                    </ul>
-                </section>
-                <section>
-                    <h4>next work</h4>
-                    <ul>                        
-                        <li>transition - 방향에 따라 다른 모드 주기</li>
-                        <li>transition - card content <a href="https://codepen.io/akosstegner/pen/MQvbEe" target="_blank">https://codepen.io/akosstegner/pen/MQvbEe</a> </li>
-                        <li>create loading 시작 mounted loading 끝</li>
-                    </ul>
-                </section> 
+                <div class="row">
+                    <section class="col-12"><blockquote>점진적인 vue 사용을 위한 테스트</blockquote></section>
+                    <section class="col-12 col-lg-6">
+                        <h4>특징</h4>
+                        <ul>
+                            <li>window.history 열람해서 뒤로가기 기능 구현</li>
+                            <li>부모 컴포넌트(card)에서 자식 컴포넌트(navbar)로 타이틀 prop을 내려줌</li>
+                            <li>mounted 훅에서 $refs 의 class 체크하여 변경</li>
+                            <li>transition router-view</li>
+                            <li>created훅에서 loading 시작 mounted훅에서 loading 끝</li>
+                        </ul>
+                    </section>
+                    <section class="col-12 col-lg-6">
+                        <h4>next work</h4>
+                        <ul>
+                            <li>history 모드에서 서버설정(직접 URL 치면 Cannot Get), 404페이지 처리</li>
+                            <li>product 내 카테고리별 child path 만들기</li>
+                            <li>각 카테고리 페이지에 carousel</li>
+                            <li>datagrid</li>
+                            <li>chart</li>
+                        </ul>
+                    </section>
+                </div>
             </div>
+            <my-loading :loading="loading"></my-loading>
         </section>
     </template>
     <template id="heroes-list">
@@ -139,33 +179,43 @@
             <div class="card-footer">
                 <router-link :to="{name:'heroadd'}" tag="button" class="btn btn-primary w-100"><i class="bi bi-plus-lg"></i> add hero</router-link>
             </div>
+            <my-loading :loading="loading"></my-loading>
         </section>
     </template>
     <template id="hero">
         <section class="card">
             <my-navbar :cardtitle="title"></my-navbar>        
-            <div class="card-body">
-                <h2>{{hero.name}}</h2>
-                <hr> 
-                <label for="hero-power">power</label> <input type="text" id="hero-power" :value="hero.power" readonly><br>
-                <label for="hero-badass">badass</label> <input type="text" id="hero-badass" :value="hero.badass" readonly>
+            <div class="card-body d-flex align-items-stretch p-0">
+                <div class="flex-shrink-0 w-50 pt-5 ps-5 pb-5">
+                    <h2>{{hero.name}}</h2>                    
+                    <p>
+                        <label>power</label> {{hero.power}}
+                    </p>
+                    <p>
+                        <label>badass</label> {{hero.badass}}
+                    </p>                    
+                </div>
+                <div class="flex-shrink-0 w-50">
+                    <div class="w-100 h-100" :style="slideImage"></div>
+                </div>                
             </div>
             <div class="card-footer">
                 <router-link :to="{name:'herolist'}" tag="button" class="btn btn-primary w-100">List</router-link>
-            </div>            
+            </div>   
+            <my-loading :loading="loading"></my-loading>
         </section>
     </template>
     <template id="hero-edit">
         <section class="card">
             <my-navbar :cardtitle="title"></my-navbar>       
-            <form v-on:submit.prevent="updateHero">
+            <form class="flex-fill d-flex flex-column" v-on:submit.prevent="updateHero">
                 <div class="card-body">      
                     <h2>edit {{ hero.name }} hero</h2> 
                     <hr>         
                     <label class="form-label">Name</label>
                     <input id="add-name" v-model="hero.name" class="form-control" required/>
                     <label class="form-label">Superpower</label>
-                    <textarea id="add-power" rows="8" v-model="hero.power" class="form-control" required></textarea>
+                    <textarea id="add-power" rows="5" v-model="hero.power" class="form-control" required></textarea>
                     <label class="form-label">Badass</label>
                     <input type="number" min="0" max="10" v-model="hero.badass" class="form-control" required/>
                 </div>
@@ -173,45 +223,62 @@
                     <router-link :to="{name:'herolist'}" class="btn btn-outline-primary flex-fill" tag="button">cancel</router-link>
                     <button type="submit" class="btn btn-primary flex-fill  ms-2"><i class="bi bi-pencil"></i> edit</button>                
                 </div>
-            </form>            
+            </form>     
+            <my-loading :loading="loading"></my-loading>       
         </section>
     </template>
     <template id="hero-add">
         <section class="card">
-            <my-navbar :cardtitle="title"></my-navbar>            
-            <form v-on:submit.prevent="createHero">
-            <div class="card-body">       
-                <h2>add hero</h2>  
-                <hr>       
-                <label class="form-label">Name</label>
-                <input id="add-name" v-model="hero.name" class="form-control" required/>
-                <label class="form-label">Superpower</label>
-                <textarea id="add-power" rows="8" v-model="hero.power" class="form-control" required></textarea>
-                <label class="form-label">Badass</label>
-                <input type="number" min="0" max="10" v-model="hero.badass" class="form-control" required/>
-            </div>
-            <div class="card-footer d-flex">
-                <router-link :to="{name:'herolist'}" class="btn btn-outline-primary flex-fill" tag="button">cancel</router-link>
-                <button type="submit" class="btn btn-primary flex-fill ms-2"><i class="bi bi-plus"></i> create</button>                
-            </div>
+            <my-navbar :cardtitle="title"></my-navbar>
+            <form class="flex-fill d-flex flex-column" v-on:submit.prevent="createHero">
+                <div class="card-body">
+                    <h2>add hero</h2>
+                    <hr>
+                    <label class="form-label">Name</label>
+                    <input id="add-name" v-model="hero.name" class="form-control" required />
+                    <label class="form-label">Superpower</label>
+                    <textarea id="add-power" rows="5" v-model="hero.power" class="form-control" required></textarea>
+                    <label class="form-label">Badass</label>
+                    <input type="number" min="0" max="10" v-model="hero.badass" class="form-control" required />
+                </div>
+                <div class="card-footer d-flex">
+                    <router-link :to="{name:'herolist'}" class="btn btn-outline-primary flex-fill" tag="button">cancel
+                    </router-link>
+                    <button type="submit" class="btn btn-primary flex-fill ms-2"><i class="bi bi-plus"></i>
+                        create</button>
+                </div>
             </form>
+            <my-loading :loading="loading"></my-loading>
         </section>
     </template>
     <template id="hero-delete">
         <section class="card">
             <my-navbar :cardtitle="title"></my-navbar>
-            <div class="card-body text-center">
-                Are You sure? You want to delete <strong>{{hero.name}}</strong> from this Universe?<br>
-                He will be very upset...
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <p>
+                    Are You sure? You want to delete <strong>{{hero.name}}</strong> from this Universe?<br>
+                    He will be very upset...
+                </p>
             </div>
             <form v-on:submit.prevent="deleteHero">
-            <div class="card-footer d-flex">
-                <router-link :to="{name:'herolist'}" class="btn btn-outline-danger flex-fill" tag="button">cancel</router-link>
-                <button type="submit" class="btn btn-danger flex-fill ms-2"><i class="bi bi-eraser"></i> delete</button>
-            </div>
+                <div class="card-footer d-flex">
+                    <router-link :to="{name:'herolist'}" class="btn btn-outline-danger flex-fill" tag="button">cancel
+                    </router-link>
+                    <button type="submit" class="btn btn-danger flex-fill ms-2"><i class="bi bi-eraser"></i>
+                        delete</button>
+                </div>
             </form>
+            <my-loading :loading="loading"></my-loading>
         </section>
     </template>
+    <template id="notfoundcomponent">
+        <section class="card">
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <h3>404 NOT FOUND</h3>
+            </div>
+        </section>
+    </template>
+
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
     <!-- JavaScript Bundle with Popper -->
@@ -219,13 +286,17 @@
     <script>
         // heroes data
         let heroes = [
-            { id : 0, name : 'Batman', power : 'Fist fighting', badass: 10 },
-            { id : 1, name : 'Superman', power : 'Laser eyes', badass: 7 },
-            { id : 2, name : 'Flash', power : 'Too fast', badass: 5 },
-            { id : 3, name : 'Spiderman', power : 'Just a nice guy', badass: 1 },
-            { id : 4, name : 'Hulk', power : 'SMASH!', badass: 42 }
+            { id : 0, name : 'Batman', power : 'Fist fighting', badass: 10, image: 'https://unsplash.it/700?image=10', },
+            { id : 1, name : 'Superman', power : 'Laser eyes', badass: 7, image: 'https://unsplash.it/700?image=11', },
+            { id : 2, name : 'Flash', power : 'Too fast', badass: 5, image: 'https://unsplash.it/700?image=12', },
+            { id : 3, name : 'Spiderman', power : 'Just a nice guy', badass: 1, image: 'https://unsplash.it/700?image=13', },
+            { id : 4, name : 'Hulk', power : 'SMASH!', badass: 42, image: 'https://unsplash.it/700?image=14', }
         ];
         // component
+        Vue.component('my-loading',{
+            props:['loading'],
+            template:'#loading'
+        });
         Vue.component('my-navbar', {
             props:['cardtitle'],
             template: '#navbar',
@@ -251,24 +322,69 @@
         // page component
         let Home = Vue.extend({
             template:'#home',
-            data:function(){return {title:this.$route.name}}
+            data:function(){return {title:this.$route.name, loading:true}},
+            created(){
+                this.loading = true;
+            },
+            mounted(){
+                this.$nextTick(function () {
+                    // 전체 화면내용이 렌더링된 후에 아래의 코드가 실행됩니다.
+                    this.loading = false;                   
+                })               
+            } 
         });
         let About = Vue.extend({
             template:'#about',
-            data:function(){return {title:this.$route.name}}
+            data:function(){return {title:this.$route.name, loading:true}},
+            created(){
+                this.loading = true;
+            },
+            mounted(){
+                this.$nextTick(function () {
+                    // 전체 화면내용이 렌더링된 후에 아래의 코드가 실행됩니다.
+                    this.loading = false;                    
+                })               
+            } 
         });
         let HeroesList = Vue.extend({
             template:'#heroes-list',
-            data:function(){return {title:this.$route.name, heroes:heroes}},
-            computed:{filteredHeroes:function(){return this.heroes;}}
+            data:function(){return {title:this.$route.name, heroes:heroes, loading:true}},
+            computed:{filteredHeroes:function(){return this.heroes;}},
+            created(){
+                this.loading = true;
+            },
+            mounted(){
+                this.$nextTick(function () {
+                    // 전체 화면내용이 렌더링된 후에 아래의 코드가 실행됩니다.
+                    setTimeout(() => this.loading = false, 1000);                    
+                })               
+            } 
         });
         let Hero = Vue.extend({
             template:'#hero',
-            data:function(){return{title:this.$route.name, hero:findHero(this.$route.params.hero_id)}}
+            data:function(){return{title:this.$route.name, hero:findHero(this.$route.params.hero_id),loading:true}},
+            computed:{
+                slideImage(){
+                    return {
+                        backgroundImage:`url(${this.hero.image})`,
+                        backgroundPosition:`center center`,
+                        backgroundSize:`cover`
+                    }
+                }
+            },    
+            created(){
+                this.loading = true;
+            },
+            mounted(){
+                this.$nextTick(function () {
+                    // 전체 화면내용이 렌더링된 후에 아래의 코드가 실행됩니다.
+                    setTimeout(() => this.loading = false, 1000);                    
+                })               
+            } 
         });
         let HeroEdit = Vue.extend({
             template:'#hero-edit',
-            data:function(){return{title:this.$route.name, hero:findHero(this.$route.params.hero_id)}},
+            data:function(){return{title:this.$route.name, hero:findHero(this.$route.params.hero_id), loading:true}},
             methods:{
                 updateHero:function(){
                     let hero = this.hero;
@@ -280,11 +396,20 @@
                     }
                     router.push({ name: 'herolist'});
                 }
-            }
+            },
+            created(){
+                this.loading = true;
+            },
+            mounted(){
+                this.$nextTick(function () {
+                    // 전체 화면내용이 렌더링된 후에 아래의 코드가 실행됩니다.
+                    setTimeout(() => this.loading = false, 1000);                    
+                })               
+            } 
         });
         let HeroAdd = Vue.extend({
             template:'#hero-add',
-            data:function(){return {title:this.$route.name, hero: { name: '', power: '', badass: 1}}},
+            data:function(){return {title:this.$route.name, hero: { name: '', power: '', badass: 1}, loading:true}},
             methods:{
                 createHero:function(){
                     let hero = this.hero;
@@ -296,18 +421,39 @@
                     });
                     router.push({ name: 'herolist'});
                 }
-            }
+            },
+            created(){
+                this.loading = true;
+            },
+            mounted(){
+                this.$nextTick(function () {
+                    // 전체 화면내용이 렌더링된 후에 아래의 코드가 실행됩니다.
+                    setTimeout(() => this.loading = false, 1000);                    
+                })               
+            } 
         });
         let HeroDelete = Vue.extend({
             template:'#hero-delete',
-            data:function(){return {title:this.$route.name, hero:findHero(this.$route.params.hero_id)}},
+            data:function(){return {title:this.$route.name, hero:findHero(this.$route.params.hero_id), loading:true}},
             methods:{
                 deleteHero:function(){
                     heroes.splice(findHeroKey(this.$route.params.hero_id),1);
                     router.push({ name: 'herolist'});
                 }
-            }
+            },
+            created(){
+                this.loading = true;
+            },
+            mounted(){
+                this.$nextTick(function () {
+                    // 전체 화면내용이 렌더링된 후에 아래의 코드가 실행됩니다.
+                    setTimeout(() => this.loading = false, 1000);                    
+                })               
+            } 
         })
+        let NotFoundComponent = Vue.extend({
+            template:'#notfoundcomponent'
+        });
         //
         function findHero(id){
             for(let i=0;i<heroes.length; ++i){
@@ -324,18 +470,19 @@
         let router = new VueRouter({
             mode: 'history',
             routes:[
+                {path:'*', component: NotFoundComponent },
                 {path:'/', component:Home, name:'home'},
                 {path:'/about', component:About, name:'about'},
                 {path:'/herolist', component:HeroesList, name:'herolist'},
                 {path:'/hero/:hero_id', component:Hero, name:'hero'},
                 {path:'/heroadd', component:HeroAdd, name:'heroadd'},
                 {path:'/heroedit/:hero_id', component:HeroEdit, name:'heroedit'},
-                {path:'/herodelete/:hero_id', component:HeroDelete, name:'herodelete'}
+                {path:'/herodelete/:hero_id', component:HeroDelete, name:'herodelete'},                
             ]
         });
         // app
         let vm = new Vue({
-            router,
+            router,           
             created: function () {
                 
             },
