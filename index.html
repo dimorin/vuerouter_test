@@ -40,69 +40,71 @@
     <template id="navbar">
         <nav class="navbar navbar-light bg-light">
             <div class="container-fluid">
-              <div>전역에서 받을 title</div>
-              <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-              <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-                <div class="offcanvas-header">                          
-                  <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                <div class="d-flex align-items-center">
+                    <button class="btn" @click="goback" v-if="!(cardtitle === 'home')"><i class="bi bi-chevron-left"></i></button>
+                    <h3 class="m-0 ms-1">{{ cardtitle }}</h3>                    
                 </div>
-                <div class="offcanvas-body">
-                  <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                    <li class="nav-item">
-                      <!-- <a class="nav-link active" aria-current="page" href="#">Home</a> -->
-                      <router-link :to="{name:'home'}" class="nav-link">home</router-link>
-                    </li>
-                    <li class="nav-item">
-                      <router-link :to="{name:'about'}" class="nav-link">about</router-link>
-                    </li>
-                    <li class="nav-item">
-                        <router-link :to="{name:'herolist'}" class="nav-link">hero list</router-link>
-                    </li>
-                  </ul>
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
+                    aria-labelledby="offcanvasNavbarLabel">
+                    <div class="offcanvas-header">
+                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul ref="gnb" class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                            <li class="nav-item">
+                                <router-link :to="{name:'home'}" class="nav-link">home</router-link>
+                            </li>
+                            <li class="nav-item">
+                                <router-link :to="{name:'about'}" class="nav-link">about</router-link>
+                            </li>
+                            <li class="nav-item">
+                                <router-link :to="{name:'herolist'}" class="nav-link">hero list</router-link>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-              </div>
             </div>
         </nav>
     </template>
     <template id="home">
         <section class="card">
-            <my-navbar></my-navbar>
-            <div class="card-body">
-                <p>welcome my vue router page!</p>   
-                <section>
-                    <h4>next work</h4>
-                    <ul>
-                        <li>전역변수에 데이터 저장하고 불러오기 - 각 페이지 타이틀</li>
-                        <li>각 페이지에 뒤로 가기 버튼 넣고<br>
-                             goBack () {
-                            window.history.length > 1
-                              ? this.$router.go(-1)
-                              : this.$router.push('/')
-                          }
-                        </li>
-                        <li>class - router-link-active 가 생기면 active 추가</li>
-                        <li>transition - 방향에 따라 다른 모드 주기</li>
-                        <li>transition - card content <a href="https://codepen.io/akosstegner/pen/MQvbEe" target="_blank">https://codepen.io/akosstegner/pen/MQvbEe</a> </li>
-                        <li>loading</li>
-                    </ul>
-                </section>            
+            <my-navbar :cardtitle="title"></my-navbar>
+            <div class="card-body d-flex align-items-center justify-content-center">  
+                <img src="https://v3.ko.vuejs.org/logo.png" alt="">                           
             </div>
         </section>
     </template>
     <template id="about">
         <section class="card">
-            <my-navbar></my-navbar>
+            <my-navbar :cardtitle="title"></my-navbar>
             <div class="card-body">
-                title : <span>{{title}}</span><br>
-                today : <span>{{today}}</span>
+                <section>                    
+                    <h4>특징</h4>
+                    <ul>
+                        <li>window.history 열람해서 뒤로가기 기능 구현</li>
+                        <li>부모 컴포넌트(card)에서 자식 컴포넌트(navbar)로 타이틀 prop을 내려줌</li>
+                        <li>mounted 훅에서 $refs 의 class 체크하여 변경</li>
+                    </ul>
+                </section>
+                <section>
+                    <h4>next work</h4>
+                    <ul>                        
+                        <li>transition - 방향에 따라 다른 모드 주기</li>
+                        <li>transition - card content <a href="https://codepen.io/akosstegner/pen/MQvbEe" target="_blank">https://codepen.io/akosstegner/pen/MQvbEe</a> </li>
+                        <li>create loading 시작 mounted loading 끝</li>
+                    </ul>
+                </section> 
             </div>
         </section>
     </template>
     <template id="heroes-list">
         <section class="card">
-            <my-navbar></my-navbar>
+            <my-navbar :cardtitle="title"></my-navbar>
             <div class="card-body">
                 <table class="table table-hover">
                     <thead>
@@ -141,7 +143,7 @@
     </template>
     <template id="hero">
         <section class="card">
-            <my-navbar></my-navbar>            
+            <my-navbar :cardtitle="title"></my-navbar>        
             <div class="card-body">
                 <h2>{{hero.name}}</h2>
                 <hr> 
@@ -149,13 +151,13 @@
                 <label for="hero-badass">badass</label> <input type="text" id="hero-badass" :value="hero.badass" readonly>
             </div>
             <div class="card-footer">
-                <router-link :to="{name:'herolist'}" tag="button" class="btn btn-primary w-100"><i class="bi bi-chevron-left"></i> Back</router-link>
+                <router-link :to="{name:'herolist'}" tag="button" class="btn btn-primary w-100">List</router-link>
             </div>            
         </section>
     </template>
     <template id="hero-edit">
         <section class="card">
-            <my-navbar></my-navbar>            
+            <my-navbar :cardtitle="title"></my-navbar>       
             <form v-on:submit.prevent="updateHero">
                 <div class="card-body">      
                     <h2>edit {{ hero.name }} hero</h2> 
@@ -176,7 +178,7 @@
     </template>
     <template id="hero-add">
         <section class="card">
-            <my-navbar></my-navbar>             
+            <my-navbar :cardtitle="title"></my-navbar>            
             <form v-on:submit.prevent="createHero">
             <div class="card-body">       
                 <h2>add hero</h2>  
@@ -197,7 +199,7 @@
     </template>
     <template id="hero-delete">
         <section class="card">
-            <my-navbar></my-navbar>
+            <my-navbar :cardtitle="title"></my-navbar>
             <div class="card-body text-center">
                 Are You sure? You want to delete <strong>{{hero.name}}</strong> from this Universe?<br>
                 He will be very upset...
@@ -225,15 +227,35 @@
         ];
         // component
         Vue.component('my-navbar', {
-            template: '#navbar'
+            props:['cardtitle'],
+            template: '#navbar',
+            methods:{
+                goback(){
+                    window.history.length > 1 ? this.$router.go(-1) : this.$router.push('/');
+                }
+            },
+            mounted: function () {
+                // $refs 는 mounted 훅에서 인식된다.
+                let gnb = this.$refs.gnb;
+                let gnb_as = gnb.querySelectorAll('li a');
+                let gnb_as_arr = Array.from(gnb_as);
+                for(let i=0; i<gnb_as_arr.length; i++){
+                    if(gnb_as_arr[i].classList.contains('router-link-exact-active')){
+                        gnb_as_arr[i].classList.add('active');
+                    }else{
+                        if(gnb_as_arr[i].classList.contains('active')) gnb_as_arr[i].classList.remove('active');
+                    }
+                }
+            },
         });
         // page component
         let Home = Vue.extend({
             template:'#home',
+            data:function(){return {title:this.$route.name}}
         });
         let About = Vue.extend({
             template:'#about',
-            data:function(){return {title:this.$route.name, today:new Date()}}
+            data:function(){return {title:this.$route.name}}
         });
         let HeroesList = Vue.extend({
             template:'#heroes-list',
@@ -313,7 +335,13 @@
         });
         // app
         let vm = new Vue({
-            router
+            router,
+            created: function () {
+                
+            },
+            updated:function(){
+                
+            }
         }).$mount('#app');
     </script>
 </body>
