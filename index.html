@@ -468,7 +468,7 @@
         function getNextId() { return (heroes[heroes.length-1].id+1); }
         // router
         let router = new VueRouter({
-            mode: 'history',
+            //mode: 'history',
             routes:[
                 {path:'*', component: NotFoundComponent },
                 {path:'/', component:Home, name:'home'},
